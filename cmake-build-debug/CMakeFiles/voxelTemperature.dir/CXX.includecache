@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/brianhowell/Desktop/Berkeley/MSOL/voxelTemperature/Voxel.cpp
+Voxel.h
+/Users/brianhowell/Desktop/Berkeley/MSOL/voxelTemperature/Voxel.h
+
+/Users/brianhowell/Desktop/Berkeley/MSOL/voxelTemperature/Voxel.h
+iostream
+-
+cmath
+-
+fstream
+-
+chrono
+-
+random
+-
+vector
+-
+algorithm
+-
+
