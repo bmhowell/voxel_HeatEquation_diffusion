@@ -41,6 +41,7 @@ Voxel::Voxel(int node_, float tFinal_, double dt_){
     dt = dt_;                                           // |    s    |  initial time discretization
     node = node_;                                       // |   ---   |  number of nodes
     h = (float) lenBlock / (node - 1);                  // |    m    |  physical discretization length
+    sizeTime = (int) tFinal / dt;                       // |   ---   |  total number of time steps
 
     // misc. parameters
     SIZEA3 = pow(node, 3);                      // |    ---   |  total number of nodes
@@ -51,8 +52,9 @@ Voxel::Voxel(int node_, float tFinal_, double dt_){
         density.push_back(rho0M);                      //  | kg/m^3  |  initialize as density of material
         heatCap.push_back(cM);                         //  | J/kg-K  |  initialize as heat capacity of material
         thermCond.push_back(kM);                       //  | J/kg-K  |  initialize as thermal conductivity of material
+        laserValues.push_back(0.0);                    //  |  W/m^2  |  initialize as 0 at each node ( update in laserProfile() )
+        theta.push_back(theta0);                       //  |    K    |  initial temperature of material
     }
-
 
 
 
@@ -152,6 +154,13 @@ void Voxel::get_densityVec(){
     std::cout << std::endl;
 }
 
+void Voxel::get_particleIndVec(){
+    std::cout << "particleIndVec: " << std::endl;
+    for (int i=0; i<particlesInd.size(); i++){
+        std::cout << particlesInd[i] << std::endl;
+    }
+}
+
 /* Mutator functions
  *
  * Allows us to edit/modify each of the member variables one at a time.
@@ -179,6 +188,7 @@ void Voxel::set_dt(double dt_){
  * problem.
  *
  * */
+
 // helper functions
 void Voxel::uniqueVec(std::vector<int> &vec){
     // return only unique nodes in particleInd
@@ -202,10 +212,42 @@ void Voxel::uniqueVec(std::vector<int> &vec){
 //    std::cout << std::endl;
 }
 
+void Voxel::density2file(){
+
+    // write to file
+    printDensity.open("/Users/brianhowell/Desktop/Berkeley/MSOL/voxelTemperature/density.dat");
+    printDensity << "X Y Z D C K" << std::endl;
+
+    for (int i=0; i<SIZEA3; i++){
+        printDensity << cubeCoord[i][1] << " " << cubeCoord[i][2] << " " << cubeCoord[i][3]
+                     << " " << density[i] << " " << heatCap[i] << " " << thermCond[i] << std::endl;
+    }
+    printDensity.close();
+}
+
+void Voxel::temp2file(){
+    // TO BE COMPLETED!!!
+}
+
+void Voxel::lastTemp2file(){
+    // write to file
+    printTemp.open("/Users/brianhowell/Desktop/Berkeley/MSOL/voxelTemperature/lastTemp.dat");
+    printTemp << "X Y Z T" << std::endl;
+
+    for (int i = 0; i < SIZEA3; i++){
+        printTemp << cubeCoord[i][1] << " " << cubeCoord[i][2] << " " << cubeCoord[i][3]
+                  << " " << theta[i] << std::endl;
+    }
+    printTemp.close();
+}
+
 // functions
 void Voxel::computeCoord(){
-    /* structure cubeCoord:
-     * cubeCoord = [node, x, y, z]
+    /* stores x-y-z coordinates for each node:
+     *
+     * @param cubeCoord = [ [node #, x, y, z],
+     *                      [      ...      ],
+     *                      [node n, x, y, z] ]
      */
 
     // required variables
@@ -254,15 +296,26 @@ void Voxel::computeCoord(){
 }
 
 void Voxel::computeBoundary(){
+    /* Stores the node numbers of all boundary nodes.
+     *      - Dirichlet on the sides of the wall
+     *      - Neumann on the tops and bottoms (requires adjacent nodes).
+     *
+     * @param bNodes - [ [node #: top boundary node],
+     *                   [node #: top adjacent bNode],
+     *                   [node #: bottom boundary],
+     *                   [node #: bottom adjacent bNode],
+     *                   [node #: wall boundary] ]
+     */
+
     std::cout << "--- Initializing computation --- " << std::endl;
     std::cout << "--- Constructing bNodes array ---" << std::endl;
     auto start = std::chrono::high_resolution_clock::now();
 
-    std::vector<int> topBoundary;
-    std::vector<int> topBoundary_h;
-    std::vector<int> bottomBoundary;
-    std::vector<int> bottomBoundary_h;
-    std::vector<int> wallBoundary;
+    std::vector<int> topBoundary;                                   // boundary node along top
+    std::vector<int> topBoundary_h;                                 // adjacent bNode along top
+    std::vector<int> bottomBoundary;                                // boundary node along bottom
+    std::vector<int> bottomBoundary_h;                              // adjacent bNode along bottom
+    std::vector<int> wallBoundary;                                  // boundary node along wall
 
     int counter = 0;
     for (int i = 0; i < node; i++){
@@ -280,7 +333,7 @@ void Voxel::computeBoundary(){
                 if (j == 0 or j == node - 1 or k == 0 or k == node - 1){
                     wallBoundary.push_back(counter);
                 }
-                counter++;
+                counter++;                                          // increments node counter
             }
         }
     }
@@ -352,9 +405,16 @@ void Voxel::computeAsparse(){
     std::cout << "compute time A matrix: " << duration << "s" << std::endl;
 }
 
-void Voxel::computeParticles(std::vector< std::vector<double> > &cubeCoord,
-                      std::vector<int> &particlesInd,
-                      std::vector<int> &particlesInterInd){
+void Voxel::computeParticles(){
+    /* computeParticles - Function computes random location within Voxel for a particle.
+     *                    Adjacent nodes that fall within radius of a particle are then
+     *                    marked to be a part of the particle.
+     *
+     * @paramVector cubeCoord - coordinates for each node
+     * @updateVector particlesInd - vector holding total indices for each particle
+     * @updateVector particlesInterInd - interfacial distance indices
+     *
+     */
 
     int nParticleNode = std::round(SIZEA3 * vP);     // total number of host nodes for particles
     double partDist, nodeParticle, randLoc, testVar;
@@ -392,30 +452,126 @@ void Voxel::computeParticles(std::vector< std::vector<double> > &cubeCoord,
             }
         }
 
+        // ensure vectors contain no duplicates of nodes
         uniqueVec(particlesInd);
         uniqueVec(particlesInterInd);
 
+        // print total number of nodes in both vectors:
 //        std::cout << "particleInd_.size(): " << particlesInd.size() << std::endl;
 //        std::cout << "particleInterInd_.size(): " << particlesInterInd.size() << std::endl;
 
         // assign interfacial material properties
-//        for (int i = 0; i < particlesInterInd.size(); i++){
-//            density[particlesInterInd[i]] = (rho0M + rho0P) / 2.;
-//            heatCap[particlesInterInd[i]] = (cP + cM) / 2.;
-//            thermCond[particlesInterInd[i]] = (kP + kM) / 2.;
-//        }
-//
-//        // assign particle material properties
-//        for (int i = 0; i < particlesInd.size(); i++){
-//            density[particlesInd[i]] = rho0P;
-//            heatCap[particlesInd[i]] = cP;
-//            thermCond[particlesInd[i]] = kP;
-//        }
+        for (int i = 0; i < particlesInterInd.size(); i++){
+            density[particlesInterInd[i]] = (rho0M + rho0P) / 2.;
+            heatCap[particlesInterInd[i]] = (cP + cM) / 2.;
+            thermCond[particlesInterInd[i]] = (kP + kM) / 2.;
+        }
+
+        // assign particle material properties
+        for (int i = 0; i < particlesInd.size(); i++){
+            density[particlesInd[i]] = rho0P;
+            heatCap[particlesInd[i]] = cP;
+            thermCond[particlesInd[i]] = kP;
+        }
         counter1++;
     }
 }
 
+void Voxel::laserProfile(){
+    /* laserProfile - updates "laserValues" vector with corresponding intensity values
+     *                as computed by Beer-Lambert
+     *
+     * @paramVector laserValues - intensity at each node from laser beam
+     */
 
+    for (int i=0; i < SIZEA3; i++){
+        if (0.0199 <= cubeCoord[i][1] and cubeCoord[i][1] <= 0.0301 and 0.0199 <= cubeCoord[i][2] and cubeCoord[i][2] <= 0.0301){
+            laserValues[i] = absorb * intensity * exp(-absorb * (lenBlock - cubeCoord[i][3]));
+        }
+    }
+}
+
+void Voxel::solutionScheme(){
+    /* solutionScheme - using A matrix for FDM computation
+     *
+     * @paramVec - Asparse          | 2D vector |  A matrix for FDM stencil
+     * @paramVec - bNodes           | 2D vector |  boundary nodes
+     * @paramVec - density          | 1D vector |  density at each node
+     * @paramVec - heatCapacity     | 1D vector |  heat capacity at each node
+
+     * @updateVec - temperature     | 2D vector |  temperature for all time steps
+     * @updateVec - theta           | 1D vector |  temperature for individual time steps
+     */
+
+    // start timer
+    auto start = std::chrono::high_resolution_clock::now();
+
+    // initialize required variables for solution scheme
+    double prefix1, prefix2, averageTemp;
+    int row, col, val;
+    int nnz = ASparse.size();
+
+//    // initialize temperature (room temperature theta0)
+//    std::vector<double> theta(SIZEA3, theta0);
+
+    // begin time stepping
+    for (int t = 0; t < sizeTime; t++){
+        // print output information
+        averageTemp = std::accumulate(theta.begin(), theta.end(), 0.0) / theta.size();
+        std::cout << "time: " << t + 1 << " / " << sizeTime;
+        std::cout << " -> average temperature: " << averageTemp << std::endl;
+
+        // coordinate-wise sparse-matrix-vector multiplication
+        // http://www.mathcs.emory.edu/~cheung/Courses/561/Syllabus/3-C/sparse.html
+        double AtimesTheta[SIZEA3];
+        std::fill_n(AtimesTheta, SIZEA3, 0);
+        for (int i = 0; i < nnz; i++){
+            row = ASparse[i][0];
+            col = ASparse[i][1];
+            val = ASparse[i][2];
+            AtimesTheta[row] = AtimesTheta[row] + val * theta[col];
+        }
+
+        // using solve for temperatures at the next time step
+        for (int j = 0; j < SIZEA3; j++){
+            theta[j] = theta[j] + dt / density[j] / heatCap[j] *
+                                  (thermCond[j] / pow(h, 2.0) * AtimesTheta[j] + laserValues[j]);
+        }
+
+        // enforce Neumann boundary conditions on the top boundary
+        for (int k = 0; k < bNodes[0].size(); k++){
+            theta[bNodes[0][k]] = theta[bNodes[1][k]];
+        }
+
+        // enforce Neumann boundary conditions on the bottom boundary
+        for (int l = 0; l < bNodes[2].size(); l++){
+            theta[bNodes[2][l]] = theta[bNodes[3][l]];
+        }
+
+        // store temperature results (every 100 steps)
+        if (t % 100 == 0){
+            temperature.push_back(theta);
+        }else{
+            continue;
+        }
+    }
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = (std::chrono::duration_cast<std::chrono::microseconds>(stop - start)).count() / 1e6;
+    std::cout << "simulation time: " << duration << "s" << std::endl;
+
+}
+
+void Voxel::laserSimulation(){
+    // laserSimulation - runs required functions to compute temperature evolution of
+    //                   a material exposed to a laser
+
+    computeCoord();                 // compute the coordinates for each node
+    computeBoundary();              // compute which nodes are on the sides, top and bottom of cube
+    computeAsparse();               // compute FDM mesh A matrix
+    computeParticles();             // compute random particles embedded in voxel
+    laserProfile();                 // compute laser intensity values at each node
+    solutionScheme();               // compute solution
+}
 
 
 

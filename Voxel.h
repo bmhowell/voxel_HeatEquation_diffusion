@@ -48,10 +48,11 @@ private:
     double dt;                                        // |    s    |  initial time discretization
     int node;                                         // |   ---   |  number of nodes
     double h;                                         // |    m    |  spatial discretization
+    int sizeTime;                                     // |   ---   |  total number of time steps
 
     // misc. parameters
-    int SIZEA3;                                 // |   ---   |  total number of nodes
-    int SIZEA2;                                 // |   ---   |  number of nodes on a single face
+    int SIZEA3;                                       // |   ---   |  total number of nodes
+    int SIZEA2;                                       // |   ---   |  number of nodes on a single face
 
     // initialize cubeCoord, bNode, and A matrix vectors
     std::vector< std::vector<double> > cubeCoord;
@@ -59,14 +60,23 @@ private:
     std::vector< std::vector<int> > ASparse;
 
     // vectors and arrays for particle generation
-    std::vector<int> particlesInd;                               // vector holding total indices for each particle
-    std::vector<int> particlesInterInd;                          // interfacial distance indices
+    std::vector<int> particlesInd;                     // vector holding total indices for each particle
+    std::vector<int> particlesInterInd;                // interfacial distance indices
 
     // initialize material properties for each node
     std::vector<int> testVec;
-    std::vector<float> density;
-    std::vector<float> heatCap;
-    std::vector<float> thermCond;
+    std::vector<float> density;                        // density at each node in voxel
+    std::vector<float> heatCap;                        // heat capacity at each node in voxel
+    std::vector<float> thermCond;                      // thermal conductivity at each node in voxel
+    std::vector<double> laserValues;                   // laser intensity at each node in voxel
+
+    // initialize temperature vectors
+    std::vector< std::vector<double> > temperature;    // store temperature for all time steps
+    std::vector<double> theta;                         // store temperature at a single times
+
+    // data outputs
+    std::ofstream printDensity;
+    std::ofstream printTemp;
 
 //    double density[SIZEA3];
 //    double heatCap[SIZEA3];
@@ -172,6 +182,9 @@ public:
     void get_densityVec();
     // get_floatVec: Returns all values within myVec
 
+    void get_particleIndVec();
+    // get_particleIndVec(): Returns all indices within Voxel for particles properties
+
     /* Mutator functions
      *
      * Allows us to edit/modify each of the member variables one at a time.
@@ -203,6 +216,14 @@ public:
     // uniqueVec - modifies input vector to only contain unique indices
     // @param - vec: vector to be passed in
 
+    void density2file();
+    // density2file - prints material parameters of each node to density.dat
+
+    void temp2file();
+    // temp2file - prints temperatures at all timesteps to folder
+    void lastTemp2file();
+    // lastTemp2file - prints the final temperature at each node to lastTemp.dat
+
     // function declarations
     void computeCoord();
     // computeCoord - compute the coords in the x-y-z directions
@@ -220,12 +241,30 @@ public:
     // computeAsparse - computes the A matrix, in the sparse variety (see comment below for structure)
     // @param - modifies 2D vector into a [n x 4] vector
 
-    void computeParticles(std::vector< std::vector<double> >&,
-                          std::vector<int>&,
-                          std::vector<int>&);
+    void computeParticles();
     // computeParticles - compute random particles within the medium of material
-    // @param - modifies 2D vector and fills with particles
+    // @paramVector cubeCoord - coordinates for each node
+    // @updateVector particlesInd - vector holding total indices for each particle
+    // @updateVector particlesInterInd - interfacial distance indices
 
+    void laserProfile();
+    // laserProfile - computes energy supplied to each node based on Beer-Lambert equation
+    // @paramVector - cubeCoord
+    // @paramVector - laserValues
+
+    void solutionScheme();
+    // solutionScheme - using A matrix for FDM computation
+    // @paramVec - ASparse: FDM mesh matrix
+    // @paramVec - bNodes: nodes of the boundaries
+    // @paramVec - density: array for density of each node
+    // @paramVec - heatCap: array for heat capacity of each node
+    // @paramVec - thermCond: array for thermal conductivity
+    // @paramVec - laserValues: energy input from laser at each node
+    // @updateVec - temperature: solution vector for every time step
+    // @updateVec - theta: solution vector for a single time step
+
+    void laserSimulation();
+    // laserSimulation - computes the temperature evolution of a material exposed to a laser
 
 
 

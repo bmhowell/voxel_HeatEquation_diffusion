@@ -39,14 +39,28 @@ int main() {
     std::cout << "Total Nodes: " << VoxelSystem.get_node() << std::endl;
     std::cout << "Total nodes in 3D domain: " << VoxelSystem.get_sizeA3() << std::endl;
 
-//    VoxelSystem.computeCoord();                 // compute the coodinates for each node
-//    VoxelSystem.computeBoundary();              // compute which nodes are on the sides, top and bottom of cube
-//    VoxelSystem.computeAsparse();               // compute FDM mesh A matrix
+    VoxelSystem.laserSimulation();              // run laser simulation
+    VoxelSystem.lastTemp2file();                // print final temperature to lastTemp.dat
+    VoxelSystem.density2file();                 // print material parameters for each node to density.dat
 
-
-    VoxelSystem.set_thetaWall(500.);
-    std::cout << "Wall temperature: " << VoxelSystem.get_thetaWall() << std::endl;
+//    VoxelSystem.set_thetaWall(500.);
+//    std::cout << "Wall temperature: " << VoxelSystem.get_thetaWall() << std::endl;
 //    std::cout << "SIZEA3: " << VoxelSystem.get_sizeA3() << std::endl;
+
+    /*
+     * next steps:
+     *
+     * -code return functions for multidimensional vectors: DONE
+     * -confirm computeCoord, computeBoundary and computeAsparse are working correctly: DONE
+     * -modify compute particles to handle vectors rather than arrays: DONE
+     * -finish coding member functions for simulation: DONE
+     * -write one single member function to compute all the steps above: DONE
+     *
+     * -add function to print temperature at every time step
+     * -replace A matrix method with direct computation
+     * -replace forward euler with adaptive trapezoidal method
+     * -add solution for diffusion equation
+     */
 
 
 
