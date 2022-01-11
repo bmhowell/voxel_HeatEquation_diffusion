@@ -30,22 +30,19 @@ int main() {
 
     // Create VoxelSystem
 //    Voxel VoxelSystem;                        // Using the default constructor
-    Voxel VoxelSystem(NODE, TFINAL, DT);      // Using overload constructor
+    Voxel VoxelSystem1(NODE, TFINAL, DT);      // Using overload constructor
+    Voxel VoxelSystem2(NODE, TFINAL, DT);
 
     // Testing the instance of the voxel class
-    std::cout << "Hello, World!" << std::endl;
-    std::cout << "Wall temperature: " << VoxelSystem.get_thetaWall() << std::endl;
-    std::cout << "Simulation time: " << VoxelSystem.get_tFinal() << std::endl;
-    std::cout << "Total Nodes: " << VoxelSystem.get_node() << std::endl;
-    std::cout << "Total nodes in 3D domain: " << VoxelSystem.get_sizeA3() << std::endl;
 
-    VoxelSystem.laserSimulation();              // run laser simulation
-    VoxelSystem.lastTemp2file();                // print final temperature to lastTemp.dat
-    VoxelSystem.density2file();                 // print material parameters for each node to density.dat
+    std::cout << "\n----- TESTING SLOW METHOD -----" << std::endl;
+    VoxelSystem1.laserSimulation();              // run laser simulation
+    std::cout << "\n----- TESTING FAST METHOD -----" << std::endl;
+    VoxelSystem2.laserSimulationFAST();
 
-//    VoxelSystem.set_thetaWall(500.);
-//    std::cout << "Wall temperature: " << VoxelSystem.get_thetaWall() << std::endl;
-//    std::cout << "SIZEA3: " << VoxelSystem.get_sizeA3() << std::endl;
+//    VoxelSystem.lastTemp2file();                // print final temperature to lastTemp.dat
+//    VoxelSystem.density2file();                 // print material parameters for each node to density.dat
+
 
     /*
      * next steps:

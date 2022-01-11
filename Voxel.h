@@ -57,6 +57,7 @@ private:
     // initialize cubeCoord, bNode, and A matrix vectors
     std::vector< std::vector<double> > cubeCoord;
     std::vector< std::vector<int> > bNodes;
+    std::vector<int> nonbNodes;
     std::vector< std::vector<int> > ASparse;
 
     // vectors and arrays for particle generation
@@ -78,12 +79,6 @@ private:
     std::ofstream printDensity;
     std::ofstream printTemp;
 
-//    double density[SIZEA3];
-//    double heatCap[SIZEA3];
-//    double thermCond[SIZEA3];
-//    std::fill_n(density.begin(), SIZEA3, rho0M);
-//    std::fill_n(heatCap.begin(), SIZEA3, CM);
-//    std::fill_n(thermCond, SIZEA3, KM);
 
 public:
     // Typically function declarations go under "Public"
@@ -155,7 +150,7 @@ public:
     // get_lenBlock(): returns the length sample material
 
     double get_intThick() const;
-    // get_intThick(): returns interstial thickness
+    // get_intThick(): returns interstitial thickness
 
     int get_kP() const;
     // get_kP(): returns thermal conductivity of particle
@@ -172,7 +167,6 @@ public:
     double get_vP() const;
     // get_vP(): returns particle volume fraction
 
-
     int get_node() const;
     // get_node: Returns number of nodes in one direction
 
@@ -185,13 +179,20 @@ public:
     void get_particleIndVec();
     // get_particleIndVec(): Returns all indices within Voxel for particles properties
 
+    void get_bNodes();
+    // get_bNodes(): Returns nodes that are on the boundary
+
+    void get_nonbNodes();
+    // get_nonbNodes(): Returns nodes that are not on the boundary
+
+    ///////////////////////////////////////////////////////////////////////////////////
     /* Mutator functions
      *
      * Allows us to edit/modify each of the member variables one at a time.
      * Does not return anything. Acts like overload constructor, but they only
      * modify one member variable at a time.
      * */
-
+    /////////////////////////////////////////
     // HELPER MUTATOR FUNCTIONS
     void set_thetaWall(double thetaWall_);
     // set_thetaWall(): sets thetaWall parameter
@@ -205,12 +206,14 @@ public:
     // set_dt(): sets dt parameter
     // @param double - new dt parameter
 
+    /////////////////////////////////////////
     /* Simulation mutator functions
      *
      * Simulation functions required for solving temperature distribution
      * problem.
      *
      * */
+
     // helper function declarations
     void uniqueVec(std::vector<int> &);
     // uniqueVec - modifies input vector to only contain unique indices
@@ -252,9 +255,19 @@ public:
     // @paramVector - cubeCoord
     // @paramVector - laserValues
 
-    void solutionScheme();
+    void solutionSchemeMatrix();
     // solutionScheme - using A matrix for FDM computation
     // @paramVec - ASparse: FDM mesh matrix
+    // @paramVec - bNodes: nodes of the boundaries
+    // @paramVec - density: array for density of each node
+    // @paramVec - heatCap: array for heat capacity of each node
+    // @paramVec - thermCond: array for thermal conductivity
+    // @paramVec - laserValues: energy input from laser at each node
+    // @updateVec - temperature: solution vector for every time step
+    // @updateVec - theta: solution vector for a single time step
+
+    void solutionSchemeFAST();
+    // solutionScheme - using FAST FDM computation
     // @paramVec - bNodes: nodes of the boundaries
     // @paramVec - density: array for density of each node
     // @paramVec - heatCap: array for heat capacity of each node
@@ -266,6 +279,8 @@ public:
     void laserSimulation();
     // laserSimulation - computes the temperature evolution of a material exposed to a laser
 
+    void laserSimulationFAST();
+    // laserSimulationFAST -- compute a fast version without matrix multiplication
 
 
 
