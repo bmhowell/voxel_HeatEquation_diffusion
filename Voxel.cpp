@@ -364,7 +364,7 @@ void Voxel::computeBoundary(){
 
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = (std::chrono::duration_cast<std::chrono::microseconds>(stop - start)).count() / 1e6;
-    std::cout << "    compute time boundaries: " << duration << "s\n" << std::endl;
+    std::cout << "    compute time boundaries: " << duration << "s" << std::endl;
 }
 
 void Voxel::computeAsparse(){
@@ -378,7 +378,7 @@ void Voxel::computeAsparse(){
      * @updateVec Asparse - |  2D Vector  |
      */
 
-    std::cout << "\n--- Constructing A sparse array ---" << std::endl;
+    std::cout << "--- Constructing A sparse array ---" << std::endl;
     auto start = std::chrono::high_resolution_clock::now();
 
     // Loop through every single node
@@ -445,7 +445,7 @@ void Voxel::computeParticles(){
     double partDist, nodeParticle, randLoc, testVar;
 
     int counter1 = 0;
-    std::cout << "\n---- GENERATING PARTICLES ----" << std::endl;
+    std::cout << "---- GENERATING PARTICLES ----" << std::endl;
     while ((particlesInd.size() < nParticleNode) and (counter1 < 10000)){
 
         // choose a random node to generate particle
@@ -588,11 +588,11 @@ void Voxel::solutionSchemeMatrix(){
     }
 
 //    std::cout << "time: " << t + 1 << " / " << sizeTime;
-    std::cout << " -> average temperature: " << averageTemp << std::endl;
+    std::cout << " ***-> average temperature: " << averageTemp << "***" << std::endl;
 
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = (std::chrono::duration_cast<std::chrono::microseconds>(stop - start)).count() / 1e6;
-    std::cout << "simulation time: " << duration << "s" << std::endl;
+    std::cout << "***simulation time: " << duration << "s***" << std::endl;
 
 }
 
@@ -623,7 +623,7 @@ void Voxel::solutionSchemeFAST(){
 //    int nnz = ASparse.size();
 
     // begin time stepping
-    std::cout << "\n---- SIMULATING: FAST METHOD ----" << std::endl;
+    std::cout << "---- SIMULATING: FAST METHOD ----" << std::endl;
     for (int t=0; t<sizeTime; t++){
         // print output information
 
@@ -678,11 +678,11 @@ void Voxel::solutionSchemeFAST(){
         }
     }
 
-    std::cout << " -> average temperature: " << averageTemp << std::endl;
+    std::cout << " ***-> average temperature: " << averageTemp << "***" << std::endl;
 
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = (std::chrono::duration_cast<std::chrono::microseconds>(stop - start)).count() / 1e6;
-    std::cout << "simulation time: " << duration << "s" << std::endl;
+    std::cout << "***simulation time: " << duration << "s***" << std::endl;
 }
 
 void Voxel::laserSimulation(){
