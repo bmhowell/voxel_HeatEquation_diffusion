@@ -10,8 +10,6 @@
  * Brian Howell
  * MSOL UC Berkeley
  *
- * The following simulation is my first real attempt in writing simulations in C++
- * and contains overly detailed comments directed for my own learning of this language.
  *
  * https://www.youtube.com/watch?v=vz1O9nRyZaY&list=PL318A5EB91569E29A&index=20
  */
@@ -40,8 +38,8 @@ int main() {
     std::cout << "\n----- TESTING FAST METHOD -----" << std::endl;
     VoxelSystem2.laserSimulationFAST();
 
-//    VoxelSystem.lastTemp2file();                // print final temperature to lastTemp.dat
-//    VoxelSystem.density2file();                 // print material parameters for each node to density.dat
+//    VoxelSystem2.lastTemp2file();                // print final temperature to lastTemp.dat
+//    VoxelSystem2.density2file();                 // print material parameters for each node to density.dat
 
 
     /*
@@ -53,9 +51,9 @@ int main() {
      * -finish coding member functions for simulation: DONE
      * -write one single member function to compute all the steps above: DONE
      *
-     * -add function to print temperature at every time step
-     * -replace A matrix method with direct computation
-     * -replace forward euler with adaptive trapezoidal method
+     * -add function to print temperature at every time step: DONE
+     * -replace A matrix method with direct computation: DEBUG -> set random seed for particle gen.
+     * -replace forward euler with adaptive trapezoidal method, possibly AB methods
      * -add solution for diffusion equation
      */
 

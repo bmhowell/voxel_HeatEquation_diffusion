@@ -451,7 +451,8 @@ void Voxel::computeParticles(){
         // choose a random node to generate particle
         // https://stackoverflow.com/questions/19665818/generate-random-numbers-using-c11-random-library
         std::random_device rd{};
-        std::mt19937 gen{rd()};
+//        std::mt19937 gen{rd()};         // random seed
+        std::mt19937 gen{1};            // set seed
         std::uniform_real_distribution<> dist{0, 1};
         randLoc = dist(gen);          // ensure diameter is positive
 
@@ -625,6 +626,7 @@ void Voxel::solutionSchemeFAST(){
     std::cout << "\n---- SIMULATING: FAST METHOD ----" << std::endl;
     for (int t=0; t<sizeTime; t++){
         // print output information
+
         averageTemp = std::accumulate(theta.begin(), theta.end(), 0.0) / theta.size();
 //        std::cout << "time: " << t + 1 << " / " << sizeTime;
 //        std::cout << " -> average temperature: " << averageTemp << std::endl;
