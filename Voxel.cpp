@@ -55,27 +55,6 @@ Voxel::Voxel(int node_, float tFinal_, double dt_){
         laserValues.push_back(0.0);                    //  |  W/m^2  |  initialize as 0 at each node ( update in laserProfile() )
         theta.push_back(theta0);                       //  |    K    |  initial temperature of material
     }
-
-
-
-//    // vectors and arrays for particle generation
-//    std::vector<int> particlesInd;                               // vector holding total indices for each particle
-//    std::vector<int> particlesInterInd;                          // interfacial distance indices
-//
-//    // initialize material properties for each node
-
-//    ** change to vectors **
-//    double density[SIZEA3];
-//    double heatCap[SIZEA3];
-//    double thermCond[SIZEA3];
-//    std::fill_n(density, SIZEA3, rho0M);
-//    std::fill_n(heatCap, SIZEA3, cM);
-//    std::fill_n(thermCond, SIZEA3, kM);
-//
-//    // initialize temperature
-//    std::vector< std::vector<double> > temperature;               // store temperature all time steps
-//    std::vector<double> theta(SIZEA3, theta0);                 // store temperature for individual time steps
-
 }
 
 // Destructor
@@ -333,29 +312,37 @@ void Voxel::computeBoundary(){
     std::vector<int> bottomBoundary;                                // boundary node along bottom
     std::vector<int> bottomBoundary_h;                              // adjacent bNode along bottom
     std::vector<int> wallBoundary;                                  // boundary node along wall
+//    std::vector<int> wallBoundary_h;                                // adjacent bNode along wall
 
     int counter = 0;
     for (int i = 0; i < node; i++){
         for (int j = 0; j < node; j++){
             for (int k = 0; k < node; k++){
+
+                // capture all boundary nodes
                 if (i == 0){
-                    // log the two boundary nodes
+                    // log the two boundary nodes on the bottom face
                     bottomBoundary.push_back(counter);              // boundary node
                     bottomBoundary_h.push_back(counter + SIZEA2);   // adjacent boundary node
                 }
                 else if (i == node - 1){
+                    // log the two boundary nodes on the top face
                     topBoundary.push_back(counter);                 // boundary node
                     topBoundary_h.push_back(counter - SIZEA2);      // adjacent boundary node
                 }
                 else if (j == 0 or j == node - 1 or k == 0 or k == node - 1){
+                    // log the boundary nodes on the wall
                     wallBoundary.push_back(counter);
                 }else{
+                    // log the non boundary nodes
                     nonbNodes.push_back(counter);
                 }
                 counter++;                                          // increments node counter
             }
         }
     }
+    std::cout << " TESTING --> nonbNodes.size(): " << nonbNodes.size() << std::endl;
+
     bNodes.push_back(topBoundary);
     bNodes.push_back(topBoundary_h);
     bNodes.push_back(bottomBoundary);
@@ -619,8 +606,6 @@ void Voxel::solutionSchemeFAST(){
     // initialize required variables for solution scheme
     double prefix1, prefix2, Avalue;
     double averageTemp;
-//    int row, col, val;
-//    int nnz = ASparse.size();
 
     // begin time stepping
     std::cout << "---- SIMULATING: FAST METHOD ----" << std::endl;
@@ -660,14 +645,14 @@ void Voxel::solutionSchemeFAST(){
             // set node equals
 //            theta[bNodes[1][i]] = theta[i + SIZEA2];
             // alternatively:
-            theta[bNodes[1][i]] = theta[bNodes[0][i]];
+            theta[bNodes[0][i]] = theta[bNodes[1][i]];
         }
 
-        // loop through adjacent nodes to top boundary -> bNodes[3]
+        // loop through adjacent nodes to bottom boundary -> bNodes[3]
         for (int i=0; i<bNodes[3].size(); i++){
 //            theta[bNodes[3][i]] = theta[i - SIZEA2];
-            // alternatively: ** (might be in issue -- check if one-to-one mapping between bNodes[2] and bNodes[3]
-            theta[bNodes[3][i]] = theta[bNodes[2][i]];
+            // alternatively:
+            theta[bNodes[2][i]] = theta[bNodes[3][i]];
         }
 
         // store temperature results (every 100 steps)

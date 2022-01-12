@@ -283,11 +283,6 @@ public:
     // laserSimulationFAST -- compute a fast version without matrix multiplication
 
 
-
-
-
-
-
 };
 
 

@@ -38,8 +38,8 @@ int main() {
     std::cout << "\n----- TESTING FAST METHOD -----" << std::endl;
     VoxelSystem2.laserSimulationFAST();
 
-//    VoxelSystem2.lastTemp2file();                // print final temperature to lastTemp.dat
-//    VoxelSystem2.density2file();                 // print material parameters for each node to density.dat
+    VoxelSystem2.lastTemp2file();                // print final temperature to lastTemp.dat
+    VoxelSystem2.density2file();                 // print material parameters for each node to density.dat
 
 
     /*
@@ -52,7 +52,7 @@ int main() {
      * -write one single member function to compute all the steps above: DONE
      *
      * -add function to print temperature at every time step: DONE
-     * -replace A matrix method with direct computation: DEBUG -> set random seed for particle gen.
+     * -replace A matrix method with direct computation: DONE
      * -replace forward euler with adaptive trapezoidal method, possibly AB methods
      * -add solution for diffusion equation
      */
