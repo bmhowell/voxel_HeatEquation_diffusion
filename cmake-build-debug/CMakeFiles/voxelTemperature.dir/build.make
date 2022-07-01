@@ -69,28 +69,28 @@ include CMakeFiles/voxelTemperature.dir/flags.make
 CMakeFiles/voxelTemperature.dir/main.cpp.o: CMakeFiles/voxelTemperature.dir/flags.make
 CMakeFiles/voxelTemperature.dir/main.cpp.o: ../main.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/brianhowell/Desktop/Berkeley/MSOL/voxelTemperature/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/voxelTemperature.dir/main.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/voxelTemperature.dir/main.cpp.o -c /Users/brianhowell/Desktop/Berkeley/MSOL/voxelTemperature/main.cpp
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/voxelTemperature.dir/main.cpp.o -c /Users/brianhowell/Desktop/Berkeley/MSOL/voxelTemperature/main.cpp
 
 CMakeFiles/voxelTemperature.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/voxelTemperature.dir/main.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/brianhowell/Desktop/Berkeley/MSOL/voxelTemperature/main.cpp > CMakeFiles/voxelTemperature.dir/main.cpp.i
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/brianhowell/Desktop/Berkeley/MSOL/voxelTemperature/main.cpp > CMakeFiles/voxelTemperature.dir/main.cpp.i
 
 CMakeFiles/voxelTemperature.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/voxelTemperature.dir/main.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/brianhowell/Desktop/Berkeley/MSOL/voxelTemperature/main.cpp -o CMakeFiles/voxelTemperature.dir/main.cpp.s
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/brianhowell/Desktop/Berkeley/MSOL/voxelTemperature/main.cpp -o CMakeFiles/voxelTemperature.dir/main.cpp.s
 
 CMakeFiles/voxelTemperature.dir/Voxel.cpp.o: CMakeFiles/voxelTemperature.dir/flags.make
 CMakeFiles/voxelTemperature.dir/Voxel.cpp.o: ../Voxel.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/brianhowell/Desktop/Berkeley/MSOL/voxelTemperature/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/voxelTemperature.dir/Voxel.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/voxelTemperature.dir/Voxel.cpp.o -c /Users/brianhowell/Desktop/Berkeley/MSOL/voxelTemperature/Voxel.cpp
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/voxelTemperature.dir/Voxel.cpp.o -c /Users/brianhowell/Desktop/Berkeley/MSOL/voxelTemperature/Voxel.cpp
 
 CMakeFiles/voxelTemperature.dir/Voxel.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/voxelTemperature.dir/Voxel.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/brianhowell/Desktop/Berkeley/MSOL/voxelTemperature/Voxel.cpp > CMakeFiles/voxelTemperature.dir/Voxel.cpp.i
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/brianhowell/Desktop/Berkeley/MSOL/voxelTemperature/Voxel.cpp > CMakeFiles/voxelTemperature.dir/Voxel.cpp.i
 
 CMakeFiles/voxelTemperature.dir/Voxel.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/voxelTemperature.dir/Voxel.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/brianhowell/Desktop/Berkeley/MSOL/voxelTemperature/Voxel.cpp -o CMakeFiles/voxelTemperature.dir/Voxel.cpp.s
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/brianhowell/Desktop/Berkeley/MSOL/voxelTemperature/Voxel.cpp -o CMakeFiles/voxelTemperature.dir/Voxel.cpp.s
 
 # Object files for target voxelTemperature
 voxelTemperature_OBJECTS = \

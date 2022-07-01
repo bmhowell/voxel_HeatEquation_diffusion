@@ -19,173 +19,47 @@ Voxel::Voxel(int node_, float tFinal_, double dt_){
     // MEMBER VARIABLES
 
     // Particle parameters
-    thetaWall = 300.;                                   // |    K    |  temperature at the wall
-    theta0 = 300.;                                      // |    K    |  initial temperature
-    intensity = 2 * pow(10, 7);           // |  W/m^2  |  initial laser intensity
-    absorb = 25.;                                       // |   1/m   |  absorption constant
-    lenBlock = 0.05;                                    // |    m    |  sample length
-    intThick = 1.;                                      // |   ___   |  number of nodes
+    thetaWall = 300.;
+    theta0 = 300.;
+    intensity = 2 * pow(10, 7);
+    absorb = 25.;
+    lenBlock = 0.05;
+    intThick = 1.;
 
     // Material parameters
-    kP = 903;                                           // |  W/m-K  |  thermal conductivity of particle
-    kM = 1;                                             // |  W/m-K  |  thermal conductivity of material
-    cP = 903;                                           // | J/kg-K  |  heat capacity of particle
-    cM = 156;                                           // | J/kg-K  |  heat capacity of material
-    rho0P = 2700;                                       // | kg/m^3  |  initial particle density
-    rho0M = 1000;                                       // | kg/m^3  |  initial material density
-    vP = 0.3;                                           // |   ---   |  volume fraction of particles
-    rParticle = lenBlock / 10;                          // |    m    |  radius of the particles
+    kP = 903;
+    kM = 1;
+    cP = 903;
+    cM = 156;
+    rho0P = 2700;
+    rho0M = 1000;
+    vP = 0.3;
+    rParticle = lenBlock / 10;
 
     // simulation parameters
-    tFinal = tFinal_;                                   // |    s    |  final simulation time
-    dt = dt_;                                           // |    s    |  initial time discretization
-    node = node_;                                       // |   ---   |  number of nodes
-    h = (float) lenBlock / (node - 1);                  // |    m    |  physical discretization length
-    sizeTime = (int) tFinal / dt;                       // |   ---   |  total number of time steps
+    tFinal = tFinal_;
+    dt = dt_;
+    node = node_;
+    h = (float) lenBlock / (node - 1);
+    sizeTime = (int) tFinal / dt;
 
     // misc. parameters
-    SIZEA3 = pow(node, 3);                      // |    ---   |  total number of nodes
-    SIZEA2 = pow(node, 2);                      // |    ---   |  number of nodes on a single face
+    SIZEA3 = pow(node, 3);
+    SIZEA2 = pow(node, 2);
 
     // initialize material parameters
     for (int i=0; i<SIZEA3; i++){
-        density.push_back(rho0M);                      //  | kg/m^3  |  initialize as density of material
-        heatCap.push_back(cM);                         //  | J/kg-K  |  initialize as heat capacity of material
-        thermCond.push_back(kM);                       //  | J/kg-K  |  initialize as thermal conductivity of material
-        laserValues.push_back(0.0);                    //  |  W/m^2  |  initialize as 0 at each node ( update in laserProfile() )
-        theta.push_back(theta0);                       //  |    K    |  initial temperature of material
+        density.push_back(rho0M);
+        heatCap.push_back(cM);
+        thermCond.push_back(kM);
+        laserValues.push_back(0.0);
+        theta.push_back(theta0);
     }
 }
 
 // Destructor
 Voxel::~Voxel() {
 }
-
-// Accessor functions
-
-// ** currently throws error: reference to non-static member function must be called; did you
-//    mean to call it with no arguments?
-//double Voxel::testVector(std::vector<double> &myVector) {
-//    return myVector.size;
-//}
-
-int Voxel::get_sizeA3() const{
-    return SIZEA3;
-}
-
-double Voxel::get_thetaWall() const{
-    return thetaWall;
-}
-
-double Voxel::get_theta0() const{
-    return theta0;
-}
-
-double Voxel::get_intensity() const{
-    return intensity;
-}
-
-double Voxel::get_absorb() const{
-    return absorb;
-}
-
-double Voxel::get_lenBlock() const{
-    return lenBlock;
-}
-
-double Voxel::get_intThick() const{
-    return intThick;
-}
-
-int Voxel::get_kP() const{
-    return kP;
-}
-
-int Voxel::get_kM() const{
-    return kM;
-}
-
-int Voxel::get_cM() const{
-    return cM;
-}
-
-int Voxel::get_cP() const{
-    return cP;
-}
-
-double Voxel::get_vP() const{
-    return vP;
-}
-
-int Voxel::get_node() const{
-    return node;
-}
-
-double Voxel::get_tFinal() const{
-    return tFinal;
-}
-
-void Voxel::get_densityVec(){
-    std::cout << "density: " << std::endl;
-    for (int i=0; i<density.size(); i++){
-        std::cout << density[i] << std::endl;
-    }
-    std::cout << std::endl;
-}
-
-void Voxel::get_particleIndVec(){
-    std::cout << "particleIndVec: " << std::endl;
-    for (int i=0; i<particlesInd.size(); i++){
-        std::cout << particlesInd[i] << std::endl;
-    }
-}
-
-void Voxel::get_bNodes(){
-    std::cout << "bNodes: " << std::endl;
-    for (int i=0; i<bNodes.size(); i++){
-        std::cout << "bNodes[i] size: " << bNodes[i].size() << std::endl;
-        std::cout << "\n   bNodes[i]: " << i << std::endl;
-        for (int j=0; j<bNodes[i].size(); j++){
-            std::cout << "    " << bNodes[i][j] << std::endl;
-        }
-    }
-}
-
-void Voxel::get_nonbNodes(){
-    std::cout << "nonbNodes.size() = " << nonbNodes.size() << std::endl;
-    std::cout << "nonbNodes: " << std::endl;
-    for (int i=0; i<nonbNodes.size(); i++){
-        std::cout << nonbNodes[i] << std::endl;
-    }
-}
-
-/* Mutator functions
- *
- * Allows us to edit/modify each of the member variables one at a time.
- * Does not return anything. Acts like overload constructor, but they only
- * modify one member variable at a time.
- *
- * */
-
-// HELPER MUTATOR FUNCTIONS
-void Voxel::set_thetaWall(double thetaWall_){
-    thetaWall = thetaWall_;
-}
-
-void Voxel::set_node(int node_){
-    node = node_;
-}
-
-void Voxel::set_dt(double dt_){
-    dt = dt_;
-}
-
-/* Simulation mutator functions
- *
- * Simulation functions required for solving temperature distribution
- * problem.
- *
- * */
 
 // helper functions
 void Voxel::uniqueVec(std::vector<int> &vec){
@@ -506,7 +380,7 @@ void Voxel::laserProfile(){
     }
 }
 
-void Voxel::solutionSchemeMatrix(){
+void Voxel::forwardEulerSchemeMatrix(){
     /* solutionScheme - using A matrix for FDM computation
      *
      * @paramVec - Asparse          | 2D vector |  A matrix for FDM stencil
@@ -583,7 +457,7 @@ void Voxel::solutionSchemeMatrix(){
 
 }
 
-void Voxel::solutionSchemeFAST(){
+void Voxel::forwardEulerSchemeFAST(){
     /* solutionScheme - using A matrix for FDM computation
      *
      * @paramVec - bNodes           | 2D vector |  boundary nodes
@@ -679,7 +553,7 @@ void Voxel::laserSimulation(){
     computeAsparse();               // compute FDM mesh A matrix
     computeParticles();             // compute random particles embedded in voxel
     laserProfile();                 // compute laser intensity values at each node
-    solutionSchemeMatrix();         // compute solution via A matrix
+    forwardEulerSchemeMatrix();     // compute solution via A matrix
 }
 
 void Voxel::laserSimulationFAST(){
@@ -690,7 +564,126 @@ void Voxel::laserSimulationFAST(){
     computeBoundary();              // compute which nodes are on the sides, top and bottom of cube
     computeParticles();             // compute random particles embedded in voxel
     laserProfile();                 // compute laser intensity values at each node
-    solutionSchemeFAST();         // compute solution via A matrix
+    forwardEulerSchemeFAST();       // compute solution via A matrix
+}
+
+// Accessor functions
+
+// ** currently throws error: reference to non-static member function must be called; did you
+//    mean to call it with no arguments?
+//double Voxel::testVector(std::vector<double> &myVector) {
+//    return myVector.size;
+//}
+
+int Voxel::get_sizeA3() const{
+    return SIZEA3;
+}
+
+double Voxel::get_thetaWall() const{
+    return thetaWall;
+}
+
+double Voxel::get_theta0() const{
+    return theta0;
+}
+
+double Voxel::get_intensity() const{
+    return intensity;
+}
+
+double Voxel::get_absorb() const{
+    return absorb;
+}
+
+double Voxel::get_lenBlock() const{
+    return lenBlock;
+}
+
+double Voxel::get_intThick() const{
+    return intThick;
+}
+
+int Voxel::get_kP() const{
+    return kP;
+}
+
+int Voxel::get_kM() const{
+    return kM;
+}
+
+int Voxel::get_cM() const{
+    return cM;
+}
+
+int Voxel::get_cP() const{
+    return cP;
+}
+
+double Voxel::get_vP() const{
+    return vP;
+}
+
+int Voxel::get_node() const{
+    return node;
+}
+
+double Voxel::get_tFinal() const{
+    return tFinal;
+}
+
+void Voxel::get_densityVec(){
+    std::cout << "density: " << std::endl;
+    for (int i=0; i<density.size(); i++){
+        std::cout << density[i] << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+void Voxel::get_particleIndVec(){
+    std::cout << "particleIndVec: " << std::endl;
+    for (int i=0; i<particlesInd.size(); i++){
+        std::cout << particlesInd[i] << std::endl;
+    }
+}
+
+void Voxel::get_bNodes(){
+    std::cout << "bNodes: " << std::endl;
+    for (int i=0; i<bNodes.size(); i++){
+        std::cout << "bNodes[i] size: " << bNodes[i].size() << std::endl;
+        std::cout << "\n   bNodes[i]: " << i << std::endl;
+        for (int j=0; j<bNodes[i].size(); j++){
+            std::cout << "    " << bNodes[i][j] << std::endl;
+        }
+    }
+}
+
+void Voxel::get_nonbNodes(){
+    std::cout << "nonbNodes.size() = " << nonbNodes.size() << std::endl;
+    std::cout << "nonbNodes: " << std::endl;
+    for (int i = 0; i< nonbNodes.size(); i++){
+        std::cout << nonbNodes[i] << std::endl;
+    }
+}
+
+/* Mutator functions
+ *
+ * Allows us to edit/modify each of the member variables one at a time.
+ * Does not return anything. Acts like overload constructor, but they only
+ * modify one member variable at a time.
+ *
+ * */
+
+// HELPER MUTATOR FUNCTIONS
+void Voxel::set_thetaWall(double thetaWall_){
+    thetaWall = thetaWall_;
+}
+
+void Voxel::set_node(int node_){
+    node = node_;
+}
+
+void Voxel::set_dt(double dt_){
+    dt = dt_;
 }
 
 

@@ -17,12 +17,6 @@
 class Voxel {
 
 private:
-    /* Encapsulation allows us to privatize certain information inside of our program
-     * so it can't be accessed from other files (preventing tampering).
-     * Sometimes, a function declaration goes here, but typically it is just the member variables.
-     *
-     * */
-
     // MEMBER VARIABLES
 
     // particle parameters
@@ -125,6 +119,74 @@ public:
     /* Destructor */
     ~Voxel();
 
+    // helper function declarations
+    void uniqueVec(std::vector<int> &);
+    // uniqueVec - modifies input vector to only contain unique indices
+    // @param - vec: vector to be passed in
+
+    void density2file();
+    // density2file - prints material parameters of each node to density.dat
+
+    void temp2file();
+    // temp2file - prints temperatures at all timesteps to folder
+    void lastTemp2file();
+    // lastTemp2file - prints the final temperature at each node to lastTemp.dat
+
+    // function declarations
+    void computeCoord();
+    // computeCoord - compute the coords in the x-y-z directions
+    // @param vector< vector<double> > - the 2D vector to be filled
+    // @param double N -  Number of nodes
+    // @param double L -  Sample length
+
+    void computeBoundary();
+    // boundaryNodes - computes which nodes are on the sides, top and bottom of the cube
+    // @params vector< vector<double> > - input 2D vector to be filled
+    // @params double - number of nodes
+    // @return vector< vector<double> > - vector of vectors containing each side
+
+    void computeAsparse();
+    // computeAsparse - computes the A matrix, in the sparse variety (see comment below for structure)
+    // @param - modifies 2D vector into a [n x 4] vector
+
+    void computeParticles();
+    // computeParticles - compute random particles within the medium of material
+    // @paramVector cubeCoord - coordinates for each node
+    // @updateVector particlesInd - vector holding total indices for each particle
+    // @updateVector particlesInterInd - interfacial distance indices
+
+    void laserProfile();
+    // laserProfile - computes energy supplied to each node based on Beer-Lambert equation
+    // @paramVector - cubeCoord
+    // @paramVector - laserValues
+
+    void forwardEulerSchemeMatrix();
+    // solutionScheme - using A matrix for FDM computation
+    // @paramVec - ASparse: FDM mesh matrix
+    // @paramVec - bNodes: nodes of the boundaries
+    // @paramVec - density: array for density of each node
+    // @paramVec - heatCap: array for heat capacity of each node
+    // @paramVec - thermCond: array for thermal conductivity
+    // @paramVec - laserValues: energy input from laser at each node
+    // @updateVec - temperature: solution vector for every time step
+    // @updateVec - theta: solution vector for a single time step
+
+    void forwardEulerSchemeFAST();
+    // solutionScheme - using FAST FDM computation
+    // @paramVec - bNodes: nodes of the boundaries
+    // @paramVec - density: array for density of each node
+    // @paramVec - heatCap: array for heat capacity of each node
+    // @paramVec - thermCond: array for thermal conductivity
+    // @paramVec - laserValues: energy input from laser at each node
+    // @updateVec - temperature: solution vector for every time step
+    // @updateVec - theta: solution vector for a single time step
+
+    void laserSimulation();
+    // laserSimulation - computes the temperature evolution of a material exposed to a laser
+
+    void laserSimulationFAST();
+    // laserSimulationFAST -- compute a fast version without matrix multiplication
+
     // Accessor Functions
     //   - Returns optimization parameters
 
@@ -207,80 +269,6 @@ public:
     // @param double - new dt parameter
 
     /////////////////////////////////////////
-    /* Simulation mutator functions
-     *
-     * Simulation functions required for solving temperature distribution
-     * problem.
-     *
-     * */
-
-    // helper function declarations
-    void uniqueVec(std::vector<int> &);
-    // uniqueVec - modifies input vector to only contain unique indices
-    // @param - vec: vector to be passed in
-
-    void density2file();
-    // density2file - prints material parameters of each node to density.dat
-
-    void temp2file();
-    // temp2file - prints temperatures at all timesteps to folder
-    void lastTemp2file();
-    // lastTemp2file - prints the final temperature at each node to lastTemp.dat
-
-    // function declarations
-    void computeCoord();
-    // computeCoord - compute the coords in the x-y-z directions
-    // @param vector< vector<double> > - the 2D vector to be filled
-    // @param double N -  Number of nodes
-    // @param double L -  Sample length
-
-    void computeBoundary();
-    // boundaryNodes - computes which nodes are on the sides, top and bottom of the cube
-    // @params vector< vector<double> > - input 2D vector to be filled
-    // @params double - number of nodes
-    // @return vector< vector<double> > - vector of vectors containing each side
-
-    void computeAsparse();
-    // computeAsparse - computes the A matrix, in the sparse variety (see comment below for structure)
-    // @param - modifies 2D vector into a [n x 4] vector
-
-    void computeParticles();
-    // computeParticles - compute random particles within the medium of material
-    // @paramVector cubeCoord - coordinates for each node
-    // @updateVector particlesInd - vector holding total indices for each particle
-    // @updateVector particlesInterInd - interfacial distance indices
-
-    void laserProfile();
-    // laserProfile - computes energy supplied to each node based on Beer-Lambert equation
-    // @paramVector - cubeCoord
-    // @paramVector - laserValues
-
-    void solutionSchemeMatrix();
-    // solutionScheme - using A matrix for FDM computation
-    // @paramVec - ASparse: FDM mesh matrix
-    // @paramVec - bNodes: nodes of the boundaries
-    // @paramVec - density: array for density of each node
-    // @paramVec - heatCap: array for heat capacity of each node
-    // @paramVec - thermCond: array for thermal conductivity
-    // @paramVec - laserValues: energy input from laser at each node
-    // @updateVec - temperature: solution vector for every time step
-    // @updateVec - theta: solution vector for a single time step
-
-    void solutionSchemeFAST();
-    // solutionScheme - using FAST FDM computation
-    // @paramVec - bNodes: nodes of the boundaries
-    // @paramVec - density: array for density of each node
-    // @paramVec - heatCap: array for heat capacity of each node
-    // @paramVec - thermCond: array for thermal conductivity
-    // @paramVec - laserValues: energy input from laser at each node
-    // @updateVec - temperature: solution vector for every time step
-    // @updateVec - theta: solution vector for a single time step
-
-    void laserSimulation();
-    // laserSimulation - computes the temperature evolution of a material exposed to a laser
-
-    void laserSimulationFAST();
-    // laserSimulationFAST -- compute a fast version without matrix multiplication
 
 
 };
